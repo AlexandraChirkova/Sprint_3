@@ -5,11 +5,8 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class Courier {
-
     private String login;
-
     private String password;
-
     private String firstName;
 
     public String getLogin() {
@@ -52,7 +49,6 @@ public class Courier {
         this.firstName = null;
     }
 
-
     public Courier(String login, String password, String firstName) {
         this.login = login;
         this.password = password;
@@ -66,6 +62,7 @@ public class Courier {
                 getRandomFirstName()
         );
     }
+
     /**
      * Получить случайный логин.
      */
@@ -94,16 +91,14 @@ public class Courier {
     /**
      * Получить курьера в виде json-строки.
      */
-    public static String toJson(Courier courier){
+    public static String toJson(Courier courier) {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(courier);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "[Login: " + getLogin() + "; password: " + getPassword() + "; First name: " + getFirstName() + "]";
     }
-
-
 
 }

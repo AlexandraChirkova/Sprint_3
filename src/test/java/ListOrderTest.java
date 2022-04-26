@@ -19,11 +19,10 @@ public class ListOrderTest {
 
     @Test
     @DisplayName("Получение списка заказов")
-    public void getOrderListTest(){
+    public void getOrderListTest() {
         api.getOrderList()
-                .then().assertThat().body("orders",is(not(empty())))
-                .and().statusCode(HttpStatus.SC_OK);
+                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .and().body("orders", is(not(empty())));
     }
-
 
 }

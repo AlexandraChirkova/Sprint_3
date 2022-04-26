@@ -5,9 +5,9 @@ import model.Order;
 
 import static io.restassured.RestAssured.given;
 
-public class OrderApi extends BaseHttpClient{
+public class OrderApi extends BaseHttpClient {
 
-    public Response createOrder(Order order){
+    public Response createOrder(Order order) {
         return given()
                 .header("Content-type", HEADER_CONTENT_TYPE)
                 .and()

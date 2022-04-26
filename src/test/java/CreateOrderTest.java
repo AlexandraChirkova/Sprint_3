@@ -21,17 +21,17 @@ public class CreateOrderTest {
     private final Order order;
     private final Object expectedCode;
 
-    public CreateOrderTest(Order order, Object expectedResponseStatusCode){
+    public CreateOrderTest(Order order, Object expectedResponseStatusCode) {
         this.order = order;
         this.expectedCode = expectedResponseStatusCode;
     }
 
-    @Parameterized.Parameters (name = "Тестовые данные {0} {1} {2}")
+    @Parameterized.Parameters(name = "Тестовые данные {0} {1} {2}")
     public static Object[][] getColorsData() {
         return new Object[][]{
-                { Order.getOrderWithoutColor(), HttpStatus.SC_CREATED }, // можно совсем не указывать цвет
-                { Order.getOrderWithBlackColor(), HttpStatus.SC_CREATED }, // можно указать один из цветов — BLACK или GREY
-                { Order.getOrderWithTwoColors(), HttpStatus.SC_CREATED } // можно указать оба цвета
+                {Order.getOrderWithoutColor(), HttpStatus.SC_CREATED}, // можно совсем не указывать цвет
+                {Order.getOrderWithBlackColor(), HttpStatus.SC_CREATED}, // можно указать один из цветов — BLACK или GREY
+                {Order.getOrderWithTwoColors(), HttpStatus.SC_CREATED} // можно указать оба цвета
         };
     }
 
@@ -40,7 +40,7 @@ public class CreateOrderTest {
     public void createOrderTest() {
         api
                 .createOrder(this.order)
-                .then().assertThat().statusCode((int)this.expectedCode)
+                .then().assertThat().statusCode((int) this.expectedCode)
                 .and().extract().body().path("track");
     }
 }

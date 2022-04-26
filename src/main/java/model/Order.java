@@ -13,8 +13,7 @@ public class Order {
     private String comment;
     private String[] color;
 
-
-    public Order(){
+    public Order() {
     }
 
     public static Order getOrderWithoutColor() {
@@ -32,16 +31,15 @@ public class Order {
 
     public static Order getOrderWithBlackColor() {
         Order orderBlack = Order.getOrderWithoutColor();
-        orderBlack.color = new String[]{ "BLACK" };
+        orderBlack.color = new String[]{"BLACK"};
         return orderBlack;
     }
 
     public static Order getOrderWithTwoColors() {
         Order orderTwoColor = Order.getOrderWithoutColor();
-        orderTwoColor.color = new String[]{ "BLACK", "GREY" };
+        orderTwoColor.color = new String[]{"BLACK", "GREY"};
         return orderTwoColor;
     }
-
 
     public String getFirstName() {
         return firstName;
@@ -140,7 +138,7 @@ public class Order {
         this.color = color;
     }
 
-    public String toJson(){
+    public String toJson() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }

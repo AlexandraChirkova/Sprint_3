@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import model.Courier;
 import org.apache.http.HttpStatus;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,22 +18,20 @@ public class LoginCourierTest {
     public void setUp() {
         RestAssured.baseURI = BaseHttpClient.BASE_URL;
     }
+
     /**
      * Курьер может авторизоваться.
      */
     @Test
     @DisplayName("Курьер должен успешно авторизоваться")
-    public void newCourierSuccessLoginTest(){
+    public void newCourierSuccessLoginTest() {
         Courier randomCourier = Courier.getRandomCourier();
         Response registerResponse = apiCourier.regNewCourier(randomCourier);
-        if (registerResponse.statusCode() == HttpStatus.SC_CREATED){ // Успешное создание учетной записи
+        if (registerResponse.statusCode() == HttpStatus.SC_CREATED) { // Успешное создание учетной записи
             apiCourier
                     .loginCourier(randomCourier)
                     .then().assertThat().statusCode(HttpStatus.SC_OK)
                     .and().body("id", greaterThan(0)); // Успешный логин
-        }
-        else{
-            Assert.fail("Не удалось создать курьера для проверки.");
         }
     }
 
@@ -43,17 +40,10 @@ public class LoginCourierTest {
      */
     @Test
     @DisplayName("Курьер должен успешно авторизоваться только со всеми обязательными полями")
-    public void loginCourierWithAllNecessaryFieldsTest(){
+    public void loginCourierWithAllNecessaryFieldsTest() {
         Courier courier = Courier.getRandomCourier();
-
         courier.setFirstName(null);
-
-        Response registerResponse = apiCourier.regNewCourier(courier);
-        if (registerResponse.statusCode() != HttpStatus.SC_CREATED){ // Успешное создание учетной записи
-            Assert.fail("Не удалось создать курьера для проверки.");
-            return;
-        }
-
+        apiCourier.regNewCourier(courier);
         apiCourier
                 .loginCourier(courier)
                 .then().assertThat().statusCode(HttpStatus.SC_OK)
@@ -65,16 +55,9 @@ public class LoginCourierTest {
      */
     @Test
     @DisplayName("Должна быть ошибка авторизации, если логин не передан")
-    public void getErrorWhenLoginIsMissedTest(){
+    public void getErrorWhenLoginIsMissedTest() {
         Courier courier = Courier.getRandomCourier();
-
-        if (apiCourier.regNewCourier(courier).statusCode() != HttpStatus.SC_CREATED){
-            Assert.fail("Не удалось создать курьера для проверки.");
-            return;
-        }
-
         courier.setLogin(null);
-
         apiCourier
                 .loginCourier(courier)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST); // Запрос без логина или пароля
@@ -85,16 +68,9 @@ public class LoginCourierTest {
      */
     @Test
     @DisplayName("Должна быть ошибка авторизации, если пароль не передан")
-    public void getErrorWhenPasswordIsMissingTest(){
+    public void getErrorWhenPasswordIsMissingTest() {
         Courier courier = Courier.getRandomCourier();
-
-        if (apiCourier.regNewCourier(courier).statusCode() != HttpStatus.SC_CREATED){
-            Assert.fail("Не удалось создать курьера для проверки.");
-            return;
-        }
-
         courier.setPassword("");
-
         apiCourier
                 .loginCourier(courier)
                 .then().assertThat().statusCode(HttpStatus.SC_BAD_REQUEST); // Запрос без логина или пароля
@@ -105,38 +81,13 @@ public class LoginCourierTest {
      */
     @Test
     @DisplayName("Должна быть ошибка авторизации, если вход под несуществующим логином")
-    public void getErrorWhenLoginWithNotExistedLoginTest(){
+    public void getErrorWhenLoginWithNotExistedLoginTest() {
         Courier courier = Courier.getRandomCourier();
-
         // Создаем курьера. Авторизуемся под ним. Удаляем его. Пытаемся авторизоваться еще раз.
-
-        Response registerResponse = apiCourier.regNewCourier(courier);
-        if (registerResponse.statusCode() != HttpStatus.SC_CREATED){ // Успешное создание учетной записи
-            Assert.fail("Не удалось создать курьера для проверки.");
-            return;
-        }
-
+        apiCourier.regNewCourier(courier);
         Response loginResponse = apiCourier.loginCourier(courier);
-        if (loginResponse.statusCode() != HttpStatus.SC_OK){ // Успешный логин
-            int id = loginResponse.then().extract().body().path("id");
-            apiCourier.deleteCourier(id);
-
-            String message = loginResponse.then().extract().body().path("message");
-            Assert.fail("Не удалось залогиниться курьеру (login:" + courier.getLogin() + "): " + message);
-
-            return;
-        }
-
         int id = loginResponse.then().extract().body().path("id");
-
-        Response deleteResponse = apiCourier.deleteCourier(id);
-        if (deleteResponse.statusCode() != HttpStatus.SC_OK){ // Успешное удаление курьера
-            String message = deleteResponse.then().extract().body().path("message");
-            Assert.fail("Не удалось удалить курьера для провнерки (login:" + courier.getLogin() + "/id:" + id + "): " + message);
-
-            return;
-        }
-
+        apiCourier.deleteCourier(id);
         apiCourier
                 .loginCourier(courier)
                 .then().assertThat().statusCode(HttpStatus.SC_NOT_FOUND); // Запрос c несуществующей парой логин-пароль
@@ -147,24 +98,17 @@ public class LoginCourierTest {
      */
     @Test
     @DisplayName("Успешная авторизация возвращает идентификатор курьера")
-    public void getCourierIdWhenSuccessLoginTest(){
+    public void getCourierIdWhenSuccessLoginTest() {
         Courier randomCourier = Courier.getRandomCourier();
-
-        Response registerResponse = apiCourier.regNewCourier(randomCourier);
-        if (registerResponse.statusCode() != HttpStatus.SC_CREATED){ // Успешное создание учетной записи
-            Assert.fail("Не удалось создать курьера для проверки.");
-            return;
-        }
-
+        apiCourier.regNewCourier(randomCourier);
         apiCourier
                 .loginCourier(randomCourier)
-                .then().assertThat().body("id", greaterThan(0))
-                .and().statusCode(HttpStatus.SC_OK);
+                .then().assertThat().statusCode(HttpStatus.SC_OK)
+                .and().body("id", greaterThan(0));
     }
 
-
     @After
-    public void afterTest(){
+    public void afterTest() {
         apiCourier.clearCreatedCouriers();
     }
 }
